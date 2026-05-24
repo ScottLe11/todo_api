@@ -1,7 +1,16 @@
 from fastapi import FastAPI
 from app.api.v1.endpoints import router as todo_router
+from app.database import engine
+from sqlmodel import Field, Session, SQLModel, create_engine, select, col
 
-app = FastAPI()
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    SQLModel.metadata.create_all(engine)
+    yield
+
+app = FastAPI(lifespan=lifespan)
 
 @app.get("/")
 def root():
