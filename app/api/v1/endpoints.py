@@ -29,18 +29,18 @@ def create_item(item: ToDoItem, session: Session = Depends(get_session)):
 @router.get("/todo_list")
 def list_items(limit: int = 10, session: Session = Depends(get_session)):
     statement = select(ToDo).limit(limit)
-    do_todos = session.exec(statement)
+    do_todos = session.exec(statement).all()
     return do_todos
     
 
-@router.get("/todo/{todo_id}", response_model=ToDoItem)
+@router.get("/todo/{todo_id}", response_model=ToDo)
 def get_todo(todo_id: int, session: Session = Depends(get_session)):
     db_todo = session.get(ToDo, todo_id)
     if not db_todo:
         raise HTTPException(status_code = 404, detail="Item not found")
     return db_todo
 
-@router.put("/todo/{todo_id}", response_model=ToDoItem)
+@router.put("/todo/{todo_id}", response_model=ToDo)
 def modify_todo(todo_id: int, todo: ToDoItem, session: Session = Depends(get_session)):
     db_todo = session.get(ToDo, todo_id)
     if not db_todo:
